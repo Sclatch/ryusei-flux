@@ -1,4 +1,5 @@
 import MeteorShower from "@/app/components/ui/MeteorShower";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -14,9 +15,14 @@ export default function Home() {
 
           <div className="relative z-10 mx-auto flex w-full flex-col gap-8 px-6 md:px-24">
             <div>
-              <p className="text-2xl font-gloock leading-tight">
-                Ryusei
-              </p>
+              {/* PLEASE CHANGE THIS LOGO URL LATER */}
+              <Image
+                src="/logos/ryuseitext.png"
+                alt="Ryusei"
+                width={500}
+                height={150} // use your PNG's real dimensions
+                className="h-auto w-18 brightness-0 invert"
+              />
               <h1 className="font-gloock text-8xl tracking-tight">
                 Flux
               </h1>

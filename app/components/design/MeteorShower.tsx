@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 
+/* This code is generated from LLM. It needs to be refined later */
+
 /* ------------------------------------------------------------------ */
 /* Star field                                                          */
 /* ------------------------------------------------------------------ */

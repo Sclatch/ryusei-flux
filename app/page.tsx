@@ -1,5 +1,7 @@
-import MeteorShower from "@/app/components/ui/MeteorShower";
 import Image from "next/image";
+
+import MeteorShower from "@/app/components/design/MeteorShower";
+import { OpenMenuButton } from "@/app/components/BurgerMenu";
 
 export default function Home() {
   return (
@@ -34,12 +36,9 @@ export default function Home() {
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
-              <a
-                href="#tools"
-                className="rounded-md px-5 py-2.5 text-sm transition-colors hover:bg-zinc-400 bg-white text-zinc-900 hover:bg-zinc-200"
-              >
+              <OpenMenuButton className="rounded-md bg-white px-5 py-2.5 text-sm text-zinc-900 transition-colors hover:bg-zinc-200">
                 Browse tools
-              </a>
+              </OpenMenuButton>
               <a
                 href="https://github.com/Sclatch/ryusei-flux"
                 target="_blank"

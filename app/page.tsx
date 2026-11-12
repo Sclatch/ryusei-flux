@@ -22,7 +22,7 @@ export default function Home() {
                 src="/logos/ryuseitext.png"
                 alt="Ryusei"
                 width={500}
-                height={150} // use your PNG's real dimensions
+                height={150}
                 className="h-auto w-18 brightness-0 invert"
               />
               <h1 className="font-gloock text-8xl tracking-tight">

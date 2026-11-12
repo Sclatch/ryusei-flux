@@ -20,7 +20,7 @@ type MenuLink = {
 // Edit this list to change what shows up in the menu.
 const defaultLinks: MenuLink[] = [
   { label: "Home", href: "/" },
-  { label: "Tools", href: "/#tools" },
+  { label: "Somedo", href: "/somed" },
   {
     label: "GitHub",
     href: "https://github.com/Sclatch/ryusei-flux",
@@ -91,7 +91,7 @@ export default function BurgerMenu({
   return (
     <MenuContext.Provider value={{ open, setOpen }}>
       <div className="flex min-h-dvh">
-        {/* Burger / close button: stays above the panel so it works as both */}
+        {/* Burger Button / close button: stays above the panel so it works as both */}
         <button
           ref={buttonRef}
           type="button"
@@ -134,7 +134,7 @@ export default function BurgerMenu({
         <nav
           id="site-menu"
           aria-label="Site menu"
-          className={`fixed inset-y-0 left-0 z-40 w-72 max-w-[85vw] border-r border-zinc-800 bg-zinc-950 pt-20 transition-[transform,translate,visibility] duration-300 ease-out motion-reduce:transition-none ${
+          className={`fixed inset-y-0 left-0 z-40 w-52 max-w-[vw] border-r border-zinc-800 bg-zinc-950 pt-20 transition-[transform,translate,visibility] duration-300 ease-out motion-reduce:transition-none ${
             open ? "visible translate-x-0" : "invisible -translate-x-full"
           }`}
         >
@@ -192,7 +192,7 @@ export default function BurgerMenu({
         <div
           aria-hidden="true"
           className={`hidden shrink-0 transition-[width] duration-300 ease-out motion-reduce:transition-none md:block ${
-            open ? "w-72" : "w-0"
+            open ? "w-52" : "w-0"
           }`}
         />
 

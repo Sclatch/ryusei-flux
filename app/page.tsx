@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 
 import MeteorShower from "@/app/components/design/MeteorShower";
 import { OpenMenuButton } from "@/app/components/BurgerMenu";
+
+export const metadata: Metadata = {
+  title: "Ryusei - Flux",
+  description:
+    "All in one tools provided by Ryusei.",
+};
 
 export default function Home() {
   return (

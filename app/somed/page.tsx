@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import DownloadForm from "./DownloadForm";
 
 export const metadata: Metadata = {
-  title: "Somedo | Ryusei Flux",
+  title: "Somedo - Flux",
   description:
     "Download videos and images from social media posts by pasting the post's URL.",
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type SubmitEvent } from "react";
 
 type Status =
   | { kind: "idle" }
@@ -28,7 +28,7 @@ export default function DownloadForm() {
   const loading = status.kind === "loading";
   const error = status.kind === "error" ? status.message : null;
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const url = parseUrl(value);

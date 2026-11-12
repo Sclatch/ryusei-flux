@@ -133,7 +133,7 @@ export default function MeteorShower() {
         }
       `}</style>
 
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden">
         {/* Stars: drawn first so the meteors pass in front of them */}
         <svg
           className="absolute inset-0 h-full w-full text-zinc-500 dark:text-zinc-100"

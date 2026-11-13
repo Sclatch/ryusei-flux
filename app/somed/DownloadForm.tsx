@@ -2,6 +2,9 @@
 
 import { useRef, useState, type SubmitEvent } from "react";
 
+import { LuClipboardPaste, LuDownload } from "react-icons/lu";
+import { FaRedditAlien, FaTwitter } from "react-icons/fa6";
+
 type Status =
   | { kind: "idle" }
   | { kind: "loading" }
@@ -78,12 +81,6 @@ export default function DownloadForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="w-full max-w-2xl">
-      <label
-        htmlFor="url-input"
-        className="mb-2 block font-serif text-sm text-zinc-400"
-      >
-        Enter URL
-      </label>
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
@@ -93,7 +90,7 @@ export default function DownloadForm() {
           inputMode="url"
           autoComplete="off"
           spellCheck={false}
-          placeholder="Paste video/image URL here..."
+          placeholder="Paste video URL here..."
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
@@ -101,25 +98,31 @@ export default function DownloadForm() {
           }}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? "url-error" : undefined}
-          className={`min-w-0 flex-1 rounded-md border bg-zinc-900 px-4 py-2.5 text-zinc-100 placeholder:text-zinc-500 ${
+          className={`min-w-0 flex-1 rounded-md border bg-zinc-900 px-4 py-2.5 text-zinc-100 
+          placeholder:font-serif placeholder:text-zinc-500
+          ${
             error ? "border-red-500/70" : "border-zinc-700"
           } ${focusRing}`}
         />
 
         <div className="flex gap-3">
+
           <button
             type="button"
             onClick={handlePaste}
-            className={`rounded-md border border-zinc-700 px-5 py-2.5 text-sm text-zinc-100 transition-colors hover:bg-zinc-900 ${focusRing}`}
+            title="Paste from clipboard"
+            className={`rounded-md border border-zinc-700 p-2.5 text-sm text-zinc-100 transition-colors hover:bg-zinc-900 ${focusRing}`}
           >
-            Paste
+            <LuClipboardPaste className="text-xl" />
           </button>
+
           <button
             type="submit"
             disabled={loading}
+            title= {loading ? "Preparing…" : "Download"}
             className={`rounded-md bg-white px-5 py-2.5 text-sm text-zinc-900 transition-colors hover:bg-zinc-200 disabled:cursor-wait disabled:opacity-60 ${focusRing}`}
           >
-            {loading ? "Preparing…" : "Download"}
+            {loading ? "Preparing…" : <LuDownload className="text-xl" />}
           </button>
         </div>
       </div>
@@ -143,6 +146,17 @@ export default function DownloadForm() {
             </a>
           </p>
         )}
+      </div>
+      {/* Social platform indicator */}
+      <div className="">
+        <p className="font-serif mb-2 text-zinc-400">
+          What's currently supported:
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <p className="flex rounded-2xl border border-zinc-600 items-center gap-2 py-2 px-3 text-zinc-400 font-serif text-sm">
+            <FaRedditAlien className="inline-block align-text-bottom text-xl" /> Reddit
+          </p>
+        </div>
       </div>
     </form>
   );

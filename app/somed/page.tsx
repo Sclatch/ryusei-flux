@@ -20,8 +20,7 @@ export default function SomedoPage() {
             </h1>
 
             <p className="max-w-xl font-serif text-zinc-400">
-              Download videos and images from various social media platforms.<br/>
-              Enter the URL of the post, then click “Download”.
+              Download videos from various social media platforms.
             </p>
 
             <DownloadForm />

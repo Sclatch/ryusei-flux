@@ -11,25 +11,47 @@ import {
   type ReactNode,
 } from "react";
 
+import { IconType } from "react-icons/lib";
+import { LuHouse, LuSmartphone, LuFileVideo } from "react-icons/lu";
+import { FaGithub } from "react-icons/fa6";
+
 type MenuLink = {
   label: string;
   href: string;
-  external?: boolean;
+  description?: string;
+  icon: IconType;
 };
 
 // Edit this list to change what shows up in the menu.
 const defaultLinks: MenuLink[] = [
-  { label: "Home", href: "/" },
-  { label: "Somedo", href: "/somed" },
+  { 
+    label: "Home",
+    description: "Where you first landed",
+    href: "/",
+    icon: LuHouse
+  },
+  { 
+    label: "Somedo",
+    description: "Social Media Videos Downloader",
+    href: "/somed",
+    icon: LuSmartphone
+  },
+  {
+    label: "Comprestar",
+    description: "Compress video sizes",
+    href: "/comprestar",
+    icon: LuFileVideo,
+  },
   {
     label: "GitHub",
+    description: "View the source code",
     href: "https://github.com/Sclatch/ryusei-flux",
-    external: true,
+    icon: FaGithub,
   },
 ];
 
 const linkBase =
-  "flex items-center justify-between rounded-md px-3 py-2.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
+  "flex items-center justify-between py-2 pr-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
 
 /* Lets any client component inside the page open or close the menu. */
 type MenuContextValue = {
@@ -134,13 +156,16 @@ export default function BurgerMenu({
         <nav
           id="site-menu"
           aria-label="Site menu"
-          className={`fixed inset-y-0 left-0 z-40 w-52 max-w-[vw] border-r border-zinc-800 bg-zinc-950 pt-20 transition-[transform,translate,visibility] duration-300 ease-out motion-reduce:transition-none ${
+          className={`fixed inset-y-0 left-0 z-40 md:w-auto w-screen max-w-[vw] border-r border-zinc-800 bg-zinc-950 pt-20 transition-[transform,translate,visibility] duration-300 ease-out motion-reduce:transition-none ${
             open ? "visible translate-x-0" : "invisible -translate-x-full"
           }`}
         >
-          <ul className="flex flex-col gap-1 px-3">
+          <div className="px-4 pb-4">
+            <a className="font-gloock text-2xl">Flux</a>
+          </div>
+          <ul className="flex flex-col gap-1">
             {links.map((link) => {
-              const active = !link.external && pathname === link.href;
+              const active = pathname === link.href;
               const style = `${linkBase} ${
                 active
                   ? "bg-zinc-900 text-white"
@@ -149,38 +174,24 @@ export default function BurgerMenu({
 
               return (
                 <li key={link.href}>
-                  {link.external ? (
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => setOpen(false)}
-                      className={style}
-                    >
-                      {link.label}
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 16 16"
-                        className="h-3.5 w-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M6 3H3v10h10v-3M9 3h4v4M13 3L7 9" />
-                      </svg>
-                    </a>
-                  ) : (
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
                       aria-current={active ? "page" : undefined}
                       className={style}
                     >
-                      {link.label}
+                      <div className="flex items-center">
+                        <link.icon className="text-xl mx-4" />
+                        <div className="flex flex-col gap-0.5">
+                          <p>
+                            {link.label}
+                          </p>
+                          <p className="font-serif text-xs italic text-zinc-500">
+                            {link.description}
+                          </p>
+                        </div>
+                      </div>
                     </Link>
-                  )}
                 </li>
               );
             })}
@@ -192,7 +203,7 @@ export default function BurgerMenu({
         <div
           aria-hidden="true"
           className={`hidden shrink-0 transition-[width] duration-300 ease-out motion-reduce:transition-none md:block ${
-            open ? "w-52" : "w-0"
+            open ? "w-64" : "w-0"
           }`}
         />
 

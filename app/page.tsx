@@ -30,9 +30,9 @@ export default function Home() {
                 alt="Ryusei"
                 width={500}
                 height={150}
-                className="h-auto w-18 brightness-0 invert"
+                className="h-auto w-18 brightness-0 invert pointer-events-none select-none"
               />
-              <h1 className="font-gloock text-8xl tracking-tight">
+              <h1 className="font-gloock text-8xl tracking-tight select-none">
                 Flux
               </h1>
             </div>

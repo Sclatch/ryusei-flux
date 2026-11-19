@@ -15,8 +15,8 @@ export default function SomedoPage() {
           {/* py-24 keeps content clear of the fixed burger button */}
           <div className="relative z-10 mx-auto flex w-full flex-col gap-8 px-6 py-24 md:px-24">
             <h1 className="font-gloock tracking-tight">
-              <span className="block text-2xl">Flux's</span>
-              <span className="block text-6xl sm:text-8xl">Somedo</span>
+              <span className="block text-2xl select-none">Flux's</span>
+              <span className="block text-6xl sm:text-8xl select-none">Somedo</span>
             </h1>
 
             <p className="max-w-xl font-serif text-zinc-400">

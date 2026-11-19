@@ -6,12 +6,13 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
 } from "react";
 
-import { IconType } from "react-icons/lib";
+import type { IconType } from "react-icons/lib";
 import { LuHouse, LuSmartphone, LuFileVideo } from "react-icons/lu";
 import { FaGithub } from "react-icons/fa6";
 
@@ -20,21 +21,22 @@ type MenuLink = {
   href: string;
   description?: string;
   icon: IconType;
+  external?: boolean;
 };
 
 // Edit this list to change what shows up in the menu.
 const defaultLinks: MenuLink[] = [
-  { 
+  {
     label: "Home",
     description: "Where you first landed",
     href: "/",
-    icon: LuHouse
+    icon: LuHouse,
   },
-  { 
+  {
     label: "Somedo",
     description: "Social Media Videos Downloader",
     href: "/somed",
-    icon: LuSmartphone
+    icon: LuSmartphone,
   },
   {
     label: "Comprestar",
@@ -47,11 +49,18 @@ const defaultLinks: MenuLink[] = [
     description: "View the source code",
     href: "https://github.com/Sclatch/ryusei-flux",
     icon: FaGithub,
+    external: true,
   },
 ];
 
 const linkBase =
-  "flex items-center justify-between py-2 pr-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
+  "flex items-center justify-between py-2 pr-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2";
+
+/** The current page's link is active, including nested routes like /somed/x. */
+function isActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 /* Lets any client component inside the page open or close the menu. */
 type MenuContextValue = {
@@ -69,12 +78,46 @@ export function useMenu() {
   return ctx;
 }
 
+/** Icon, label, and description: shared by internal and external links. */
+function ItemBody({ link }: { link: MenuLink }) {
+  return (
+    <>
+      <span className="flex items-center">
+        <link.icon aria-hidden="true" className="mx-4 text-xl" />
+        <span className="flex flex-col gap-0.5">
+          <span>{link.label}</span>
+          {link.description && (
+            <span className="font-serif text-xs italic text-zinc-500">
+              {link.description}
+            </span>
+          )}
+        </span>
+      </span>
+
+      {link.external && (
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 16 16"
+          className="h-3.5 w-3.5 shrink-0"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M6 3H3v10h10v-3M9 3h4v4M13 3L7 9" />
+        </svg>
+      )}
+    </>
+  );
+}
+
 /**
  * Burger button + left sidebar that wraps the page.
  *
- * - md and up: the sidebar pushes the page to the right (nothing is covered).
- * - Below md: there is too little room to push, so it overlays the page
- *   with a backdrop instead.
+ * - Phones (below md): the menu covers the whole screen.
+ * - md and up: the menu is only as wide as its longest label or description,
+ *   and pushes the page to the right instead of covering it.
  */
 export default function BurgerMenu({
   links = defaultLinks,
@@ -85,10 +128,32 @@ export default function BurgerMenu({
 }) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
 
-  // While open: Escape closes the menu. On small screens (overlay mode),
-  // the page behind it also can't scroll.
+  // Keeps the context value stable so consumers only re-render when `open` changes.
+  const menu = useMemo(() => ({ open, setOpen }), [open]);
+
+  // The panel sizes itself to its content, but it is `fixed`, so the spacer
+  // can't see its width. Measure the panel and share the result as --menu-w.
+  // It re-measures if the content changes (new links, web fonts loading, ...).
+  useEffect(() => {
+    const nav = navRef.current;
+    const wrapper = wrapperRef.current;
+    if (!nav || !wrapper) return;
+
+    const sync = () =>
+      wrapper.style.setProperty("--menu-w", `${nav.offsetWidth}px`);
+    sync();
+
+    const observer = new ResizeObserver(sync);
+    observer.observe(nav);
+    return () => observer.disconnect();
+  }, []);
+
+  // While open: Escape closes the menu, and on phones the page behind the
+  // full-screen menu can't scroll.
   useEffect(() => {
     if (!open) return;
 
@@ -111,9 +176,9 @@ export default function BurgerMenu({
   }, [open]);
 
   return (
-    <MenuContext.Provider value={{ open, setOpen }}>
-      <div className="flex min-h-dvh">
-        {/* Burger Button / close button: stays above the panel so it works as both */}
+    <MenuContext.Provider value={menu}>
+      <div ref={wrapperRef} className="flex min-h-dvh">
+        {/* Burger / close button: stays above the panel so it works as both */}
         <button
           ref={buttonRef}
           type="button"
@@ -142,68 +207,69 @@ export default function BurgerMenu({
           </span>
         </button>
 
-        {/* Backdrop: small screens only (overlay mode) */}
-        <div
-          aria-hidden="true"
-          onClick={() => setOpen(false)}
-          className={`fixed inset-0 z-30 bg-black/60 transition-opacity duration-300 motion-reduce:transition-none md:hidden ${
-            open ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
-        />
-
         {/* Side panel: slides in from the left.
+            Phones: full screen (w-full). md+: as wide as its content (w-max),
+            capped so a very long description wraps instead of taking over.
             `invisible` when closed also removes the links from the tab order. */}
         <nav
+          ref={navRef}
           id="site-menu"
           aria-label="Site menu"
-          className={`fixed inset-y-0 left-0 z-40 md:w-auto w-screen max-w-[vw] border-r border-zinc-800 bg-zinc-950 pt-20 transition-[transform,translate,visibility] duration-300 ease-out motion-reduce:transition-none ${
+          className={`fixed inset-y-0 left-0 z-40 w-full overflow-y-auto border-r border-zinc-800 bg-zinc-950 transition-[transform,translate,visibility] duration-300 ease-out motion-reduce:transition-none md:w-max md:max-w-sm ${
             open ? "visible translate-x-0" : "invisible -translate-x-full"
           }`}
         >
-          <div className="px-4 pb-4">
-            <a className="font-gloock text-2xl">Flux</a>
+          {/* px-20 keeps the title clear of the burger button */}
+          <div className="px-20 py-6">
+            <span className="font-gloock text-2xl select-none">
+              Flux
+            </span>
           </div>
+
           <ul className="flex flex-col gap-1">
             {links.map((link) => {
-              const active = pathname === link.href;
+              const active = !link.external && isActive(pathname, link.href);
               const style = `${linkBase} ${
                 active
                   ? "bg-zinc-900 text-white"
-                  : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                  : "border-transparent text-zinc-400 hover:bg-zinc-900 hover:text-white"
               }`;
 
               return (
                 <li key={link.href}>
+                  {link.external ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setOpen(false)}
+                      className={style}
+                    >
+                      <ItemBody link={link} />
+                    </a>
+                  ) : (
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
                       aria-current={active ? "page" : undefined}
                       className={style}
                     >
-                      <div className="flex items-center">
-                        <link.icon className="text-xl mx-4" />
-                        <div className="flex flex-col gap-0.5">
-                          <p>
-                            {link.label}
-                          </p>
-                          <p className="font-serif text-xs italic text-zinc-500">
-                            {link.description}
-                          </p>
-                        </div>
-                      </div>
+                      <ItemBody link={link} />
                     </Link>
+                  )}
                 </li>
               );
             })}
           </ul>
         </nav>
 
-        {/* Spacer: reserves the panel's width on md+ so the page is pushed
-            to the right instead of being covered. Same duration as the panel. */}
+        {/* Spacer: md+ only. Reserves exactly the panel's measured width so the
+            page is pushed to the right instead of being covered. 16rem is only
+            a fallback until the first measurement. */}
         <div
           aria-hidden="true"
           className={`hidden shrink-0 transition-[width] duration-300 ease-out motion-reduce:transition-none md:block ${
-            open ? "w-64" : "w-0"
+            open ? "w-[var(--menu-w,16rem)]" : "w-0"
           }`}
         />
 
